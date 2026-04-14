@@ -1,0 +1,100 @@
+/* =========================
+   NETMON • TECH BACKGROUND
+   (Uses your theme variables)
+    behind UI, never blocks clicks
+========================= */
+
+.tech-bg{
+  position: fixed;
+  inset: 0;
+  z-index: 0;                 /* behind everything */
+  overflow: hidden;
+  pointer-events: none;
+
+  background:
+    radial-gradient(circle at 60% 40%, rgba(91,231,255,0.12), rgba(0,0,0,0.92) 55%),
+    radial-gradient(circle at 20% 70%, rgba(140,80,255,0.09), rgba(0,0,0,0.94) 62%),
+    linear-gradient(to bottom, var(--bg, #020617), #050b12);
+}
+
+/* slight vignette = premium readability */
+.tech-bg::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: radial-gradient(circle at 50% 40%,
+    rgba(0,0,0,0.06) 0%,
+    rgba(0,0,0,0.35) 62%,
+    rgba(0,0,0,0.58) 100%);
+  opacity: 0.85;
+}
+
+/* Perspective grid */
+.tech-grid{
+  position:absolute;
+  inset:-80px;
+
+  background-image:
+    linear-gradient(to right, rgba(91,231,255,0.11) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(91,231,255,0.08) 1px, transparent 1px);
+
+  background-size: 86px 86px;
+  transform: perspective(900px) rotateX(58deg) translateY(-150px);
+  transform-origin: top;
+
+  opacity: 0.18;              /* softer */
+  animation: gridMove 12s linear infinite;
+  filter: blur(0.2px);
+}
+
+@keyframes gridMove{
+  from { background-position: 0 0, 0 0; }
+  to   { background-position: 0 560px, 0 560px; }
+}
+
+/* Soft glow */
+.tech-glow{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 55% 45%,
+      rgba(91,231,255,0.16),
+      transparent 62%);
+  filter: blur(16px);
+  opacity: 0.62;
+  animation: glowPulse 5.2s ease-in-out infinite;
+}
+
+@keyframes glowPulse{
+  0%,100%{ opacity:0.50; transform: scale(1); }
+  50%{ opacity:0.78; transform: scale(1.03); }
+}
+
+/* Canvas dots/mesh */
+#tech-canvas{
+  position: fixed;
+  inset: 0;
+  z-index: 1;                 /* above bg, below UI */
+  pointer-events: none;
+  opacity: 0.52;              /* cleaner */
+}
+
+/*  Recommended: ensure your UI wrapper is above */
+.main-content,
+.main,
+.hero,
+.sidebar{
+  position: relative;
+  z-index: 5;
+}
+
+/* Mobile: reduce density */
+@media (max-width: 720px){
+  .tech-grid{
+    opacity: 0.13;
+    background-size: 108px 108px;
+    transform: perspective(900px) rotateX(58deg) translateY(-175px);
+  }
+  .tech-glow{ opacity: 0.55; }
+  #tech-canvas{ opacity: 0.40; }
+}

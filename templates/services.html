@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NETMON • Services</title>
+
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- ✅ Global CSS (cache bust) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=7">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/services.css') }}">
+</head>
+
+<body>
+
+  <div class="sidebar">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NetMon">
+    </div>
+
+    <ul>
+      <li class="{{ 'active' if request.path in ['/', '/home'] else '' }}">
+        <a href="{{ url_for('home') }}">Home</a>
+      </li>
+      <li class="{{ 'active' if request.path == '/login' else '' }}">
+        <a href="{{ url_for('login_page') }}">Login</a>
+      </li>
+      <li class="{{ 'active' if request.path == '/traffic' else '' }}">
+        <a href="{{ url_for('traffic_page') }}">Traffic</a>
+      </li>
+      <li class="{{ 'active' if request.path == '/services' else '' }}">
+        <a href="{{ url_for('services_page') }}">Services</a>
+      </li>
+      <li class="{{ 'active' if request.path == '/inventory' else '' }}">
+        <a href="{{ url_for('inventory_page') }}">Inventory</a>
+      </li>
+      <li class="{{ 'active' if request.path == '/security' else '' }}">
+        <a href="{{ url_for('security_page') }}">Security</a>
+      </li>
+      <li class="{{ 'active' if request.path == '/quick-analysis' else '' }}">
+        <a href="{{ url_for('quick_analysis_page') }}">Quick Analysis</a>
+      </li>
+      <li class="logout">
+        <a href="{{ url_for('logout') }}">Logout</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="main">
+
+    <div class="topbar">
+      <div>
+        <h1>Services</h1>
+        <p class="subtitle">System components, endpoints, and quick operational checks.</p>
+      </div>
+
+      <div class="top-actions">
+        <div class="pill" title="App status">
+          <span class="dot"></span>
+          <span>Running</span>
+        </div>
+
+        <button class="btn btn-primary" type="button" onclick="runQuickHealthCheck()">
+          Quick Health Check
+        </button>
+      </div>
+    </div>
+
+    <div class="service-grid">
+      <div class="service">
+        <h3>Traffic Monitoring</h3>
+        <p>Captures live packet fields (source IP, destination IP, frame length) and shows packet flow summary in real-time.</p>
+        <div class="badge"><span class="mini-dot"></span> Endpoint: <span class="muted">/api/traffic/start</span></div>
+      </div>
+
+      <div class="service">
+        <h3>Network Inventory</h3>
+        <p>Detects internal vs external IPs observed in traffic and stores device activity history to SQLite for reporting.</p>
+        <div class="badge"><span class="mini-dot"></span> Endpoint: <span class="muted">/api/inventory/scan</span></div>
+      </div>
+
+      <div class="service">
+        <h3>Security Check</h3>
+        <p>Performs a threshold-based anomaly check on packet lengths and saves scan history for quick review.</p>
+        <div class="badge"><span class="mini-dot"></span> Endpoint: <span class="muted">/api/security/scan</span></div>
+      </div>
+
+      <div class="service">
+        <h3>Model Test</h3>
+        <p>Runs a small sample through the trained model pipeline (scaler + model + label encoder) to verify ML setup.</p>
+        <div class="badge"><span class="mini-dot"></span> Endpoint: <span class="muted">/api/model/test</span></div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <h3>Quick Actions</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Service</th>
+            <th>What it does</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Traffic</td>
+            <td>Live packet capture page</td>
+            <td><button class="btn" type="button" onclick="goTo('{{ url_for('traffic_page') }}')">Open</button></td>
+          </tr>
+          <tr>
+            <td>Inventory</td>
+            <td>Scan & show detected devices</td>
+            <td><button class="btn" type="button" onclick="goTo('{{ url_for('inventory_page') }}')">Open</button></td>
+          </tr>
+          <tr>
+            <td>Security</td>
+            <td>Run anomaly check and view history</td>
+            <td><button class="btn" type="button" onclick="goTo('{{ url_for('security_page') }}')">Open</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="service section-gap">
+      <h3>
+        Supported Protocol Monitoring
+        <span class="live-badge">• Live Ready</span>
+      </h3>
+
+      <p>NetMon captures and analyzes packet-level communication across multiple network protocols using tshark for real-time inspection.</p>
+
+      <div class="badges-row">
+        <div class="badge"><span class="mini-dot"></span> TCP</div>
+        <div class="badge"><span class="mini-dot"></span> UDP</div>
+        <div class="badge"><span class="mini-dot"></span> ICMP</div>
+        <div class="badge"><span class="mini-dot"></span> HTTP / HTTPS</div>
+        <div class="badge"><span class="mini-dot"></span> DNS</div>
+      </div>
+
+      <div class="protocol-info">
+        <div class="protocol-item">
+          <span class="proto-name">TCP</span>
+          <span class="proto-desc">Reliable, connection-oriented protocol used for secure and ordered data transmission.</span>
+        </div>
+        <div class="protocol-item">
+          <span class="proto-name">UDP</span>
+          <span class="proto-desc">Fast, connectionless protocol used for real-time communication like streaming and gaming.</span>
+        </div>
+        <div class="protocol-item">
+          <span class="proto-name">ICMP</span>
+          <span class="proto-desc">Network diagnostic protocol used for error reporting and connectivity checks.</span>
+        </div>
+        <div class="protocol-item">
+          <span class="proto-name">HTTP/HTTPS</span>
+          <span class="proto-desc">Protocols for web communication; HTTPS adds encryption for secure data transfer.</span>
+        </div>
+        <div class="protocol-item">
+          <span class="proto-name">DNS</span>
+          <span class="proto-desc">Translates domain names into IP addresses to locate servers on the internet.</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function goTo(url) { window.location.href = url; }
+
+    async function runQuickHealthCheck() {
+      const endpoints = [
+        { name: "Model Test", url: "/api/model/test" },
+        { name: "Security History", url: "/api/security/history?days=1" },
+        { name: "Inventory History", url: "/api/inventory/history?days=1" }
+      ];
+
+      let okCount = 0;
+      for (const ep of endpoints) {
+        try { const res = await fetch(ep.url); if (res.ok) okCount++; } catch (e) {}
+      }
+      alert(`Health Check: ${okCount}/${endpoints.length} endpoints reachable`);
+    }
+  </script>
+
+</body>
+</html>

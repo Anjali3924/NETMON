@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NETMON • Security Dashboard</title>
+
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=7">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/security.css') }}?v=21">
+</head>
+
+<body>
+
+  <div class="sidebar">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NetMon">
+    </div>
+
+    <ul>
+      <li class="{{ 'active' if request.path in ['/', '/home'] else '' }}">
+        <a href="{{ url_for('home') }}">Home</a>
+      </li>
+      <li class="{{ 'active' if request.path == '/traffic' else '' }}">
+        <a href="{{ url_for('traffic_page') }}">Traffic</a>
+      </li>
+      <li class="{{ 'active' if request.path == '/services' else '' }}">
+        <a href="{{ url_for('services_page') }}">Services</a>
+      </li>
+      <li class="{{ 'active' if request.path == '/inventory' else '' }}">
+        <a href="{{ url_for('inventory_page') }}">Inventory</a>
+      </li>
+      <li class="{{ 'active' if request.path == '/security' else '' }}">
+        <a href="{{ url_for('security_page') }}">Security</a>
+      </li>
+      <li class="{{ 'active' if request.path == '/quick-analysis' else '' }}">
+        <a href="{{ url_for('quick_analysis_page') }}">Quick Analysis</a>
+      </li>
+      <li class="logout">
+        <a href="{{ url_for('logout') }}">Logout</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="main">
+
+    <div class="topbar">
+      <div>
+        <h1>Security Center</h1>
+        <p class="subtitle">
+          Live anomaly check based on packet length (baseline threshold-based).
+        </p>
+      </div>
+
+      <div class="top-actions">
+        <div class="pill" title="Security module status">
+          <span class="dot"></span>
+          <span>Monitoring</span>
+        </div>
+
+        <button class="btn btn-primary" type="button" onclick="safeRunSecurity()">
+          Run Security Check
+        </button>
+      </div>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <h3>Total Analyzed</h3>
+        <p id="secTotal">0</p>
+      </div>
+
+      <div class="card">
+        <h3>Normal</h3>
+        <p id="secNormal">0</p>
+      </div>
+
+      <div class="card">
+        <h3>Suspicious</h3>
+        <p id="secSuspicious">0</p>
+      </div>
+
+      <div class="card">
+        <h3>Status</h3>
+        <p id="secStatus" class="ok">SAFE</p>
+        <small id="secNote"></small>
+      </div>
+
+      <div class="card">
+        <h3>Severity Level</h3>
+        <p id="secSeverity">-</p>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <h3>How it works</h3>
+
+      <p class="description">
+        NetMon captures live packets and checks the maximum packet size seen during a scan.
+        <br>
+        Threshold is the configured limit.
+        The table “Threshold” column shows the <b>exact max packet length observed</b> for that scan.
+      </p>
+
+      <p class="threshold-text">
+        Threshold (configured):
+        <span id="secThresholdBase" class="threshold">
+          <p>LOW: < 1080</p>
+          <p>MEDIUM: 1080 to 1200</p>
+          <p>HIGH: > 1200</p>
+        </span>
+      </p>
+    </div>
+
+    <div class="table-container sec-section">
+      <div class="sec-headrow">
+        <h3 class="sec-title">Security History</h3>
+
+        <div class="mini-controls">
+          <label for="secDays">Show:</label>
+          <select id="secDays" aria-label="Select number of days">
+            <option value="1">1 day</option>
+            <option value="2" selected>2 days</option>
+            <option value="7">7 days</option>
+          </select>
+          <button class="btn" type="button" onclick="loadSecurityHistory()">Load</button>
+        </div>
+      </div>
+
+      <p id="secHistoryMeta" class="sec-meta"></p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Total</th>
+            <th>Normal</th>
+            <th>Suspicious</th>
+            <th>Top IP</th>
+            <th>Status</th>
+            <th>Severity</th>
+            <th>Threshold</th>
+          </tr>
+        </thead>
+
+        <tbody id="secHistoryTable">
+          <tr><td colspan="8">Loading history...</td></tr>
+        </tbody>
+      </table>
+
+      <p class="sec-meta">
+        Tip: Click any <b>IP</b> to view details (hits will be shown inside the modal).
+      </p>
+    </div>
+
+    <div class="table-container sec-section">
+      <h3>Recent Alerts</h3>
+      <p class="sec-meta">
+        Only scans with suspicious packets are shown here. Click <b>Top IP</b> to view details.
+      </p>
+
+      <table class="sec-alerts-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Suspicious</th>
+            <th>Top IP</th>
+            <th>Severity</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+
+        <tbody id="secAlertsTable">
+          <tr><td colspan="5">No alerts yet</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- ✅ IP DETAILS MODAL -->
+  <div id="ipModal" class="ip-modal hidden" aria-hidden="true">
+    <div class="ip-modal-card" role="dialog" aria-modal="true" aria-labelledby="ipTitle">
+      <div class="ip-modal-head">
+        <h3 id="ipTitle">IP Details</h3>
+        <button id="ipCloseBtn" class="ip-close" type="button">✕</button>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btnCopyIp" class="mini-btn" type="button">Copy IP</button>
+      </div>
+
+      <div id="ipBody" class="ip-body">Loading…</div>
+    </div>
+  </div>
+
+  <script>
+    window.NETMON_ENDPOINTS = {
+      security: "/api/security/scan",
+      securityHistory: "/api/security/history",
+      ipDetails: "/api/ip-details"
+    };
+
+    function safeRunSecurity() {
+      if (typeof runSecurity === "function") runSecurity();
+      else alert("security.js not loaded.");
+    }
+  </script>
+
+  <script src="{{ url_for('static', filename='js/security.js') }}?v=21" defer></script>
+
+</body>
+</html>

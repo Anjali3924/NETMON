@@ -1,0 +1,301 @@
+/*  QUICK ANALYSIS PAGE ONLY
+   No sidebar / no root sidebar vars / no margin-left here.
+   Uses layout + sidebar from style.css
+*/
+
+/* =========================
+   PAGE WRAP
+========================= */
+.main{
+  position: relative;
+}
+
+/* =========================
+   TOPBAR LAYOUT (left text + right buttons)
+========================= */
+.topbar{
+  display:flex;
+  justify-content: space-between;
+  align-items:flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.title-wrap{
+  max-width: 820px;
+}
+
+.actions{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content:flex-end;
+  align-items:center;
+}
+
+/* match your button system */
+.btn{
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(2,6,23,0.35);
+  color: rgba(234,242,255,0.90);
+  font-weight: 900;
+  cursor:pointer;
+  transition: transform .18s ease, background .18s ease, border .18s ease, box-shadow .18s ease;
+}
+.btn:hover{
+  transform: translateY(-2px);
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(91,231,255,0.18);
+  box-shadow: 0 0 18px rgba(91,231,255,0.12);
+}
+.btn.primary{
+  background: rgba(56,189,248,0.18);
+  border: 1px solid rgba(56,189,248,0.30);
+}
+.btn.primary:hover{
+  background: rgba(56,189,248,0.28);
+  border: 1px solid rgba(56,189,248,0.48);
+}
+.btn.danger{
+  background: rgba(239,68,68,0.14);
+  border: 1px solid rgba(239,68,68,0.28);
+}
+.btn.danger:hover{
+  background: rgba(239,68,68,0.20);
+  border: 1px solid rgba(239,68,68,0.42);
+}
+.btn.ghost{
+  background: rgba(2,6,23,0.35);
+}
+
+/* tiny buttons inside cards */
+.btn.tiny{
+  padding: 7px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+/* =========================
+   INTRO BOX
+========================= */
+.analysis-intro{
+  margin-top: 10px;
+  padding: 14px 14px;
+  border-radius: 14px;
+  background: rgba(2,6,23,0.45);
+  border: 1px solid rgba(91,231,255,0.14);
+  color: rgba(234,242,255,0.88);
+  line-height: 1.55;
+  font-size: 13px;
+  box-shadow: 0 18px 55px rgba(0,0,0,0.35);
+}
+.live-intro{
+  display:block;
+  margin-top: 10px;
+  color: rgba(234,242,255,0.78);
+}
+
+/* =========================
+   KPI ROW (4 cards)
+========================= */
+.kpi-grid{
+  margin: 14px 0;
+  display:grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 14px;
+}
+
+.kpi{
+  grid-column: span 3;
+  background: rgba(2,6,23,0.55);
+  border: 1px solid rgba(91,231,255,0.14);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 18px 55px rgba(0,0,0,0.35);
+}
+
+.kpi-label{
+  font-size: 12px;
+  color: rgba(234,242,255,0.60);
+  font-weight: 800;
+  letter-spacing: .3px;
+}
+
+.kpi-value{
+  margin-top: 6px;
+  font-size: 30px;
+  font-weight: 900;
+  color: rgba(235,245,255,0.95);
+}
+
+.kpi-foot{
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(234,242,255,0.62);
+}
+
+.kpi.threat .kpi-value{
+  color: #5BE7FF;
+  text-shadow: 0 0 10px rgba(91,231,255,0.25);
+}
+
+/* =========================
+    MAIN GRAPH GRID (THIS IS THE FIX)
+   2×2 like your screenshot
+========================= */
+.grid{
+  display:grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 14px;
+  align-items: stretch;
+  grid-auto-flow: row dense; /* keeps layout tight */
+}
+
+/* spans used in your HTML */
+.span-7{ grid-column: span 7; }
+.span-5{ grid-column: span 5; }
+
+/* =========================
+   CARD STRUCTURE (equal heights)
+========================= */
+.card{
+  background: rgba(2,6,23,0.55);
+  border: 1px solid rgba(91,231,255,0.14);
+  border-radius: 18px;
+  box-shadow: 0 18px 55px rgba(0,0,0,0.35);
+  overflow:hidden;
+
+  display:flex;
+  flex-direction:column;
+  min-height: 380px; /*  makes right panels align like screenshot */
+}
+
+.card-head{
+  display:flex;
+  justify-content: space-between;
+  align-items:flex-start;
+  gap: 12px;
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.card-title{
+  font-weight: 900;
+  letter-spacing: .2px;
+  color: rgba(235,245,255,0.95);
+}
+
+.card-sub{
+  margin-top: 4px;
+  font-size: 12px;
+  color: rgba(234,242,255,0.58);
+}
+
+.card-actions{
+  display:flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content:flex-end;
+  align-items:center;
+}
+
+.card-body{
+  padding: 12px 14px 14px;
+  flex: 1; /*  makes body fill remaining height */
+  display:flex;
+  flex-direction:column;
+}
+
+/* charts / animation areas */
+.chart-box,
+.anim-box{
+  width:100%;
+  flex: 1;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(2,6,23,0.35);
+  padding: 10px;
+  display:flex;
+}
+
+/* force canvases to behave properly */
+.chart-box canvas,
+.anim-box canvas{
+  width: 100% !important;
+  height: 100% !important;
+  display:block;
+}
+
+/* =========================
+   AI INSIGHTS MINI BLOCKS
+========================= */
+.mini-row{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.mini{
+  background: rgba(2,6,23,0.35);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 10px;
+}
+
+.mini-label{
+  font-size: 11px;
+  color: rgba(234,242,255,0.60);
+  font-weight: 800;
+}
+
+.mini-value{
+  margin-top: 6px;
+  font-size: 16px;
+  font-weight: 900;
+  color: rgba(235,245,255,0.92);
+}
+
+.divider{
+  height: 1px;
+  background: rgba(255,255,255,0.06);
+  margin: 10px 0 10px;
+}
+
+.insights{
+  margin: 0;
+  padding-left: 18px;
+  color: rgba(234,242,255,0.85);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* =========================
+   FOOTER
+========================= */
+.footer{
+  margin-top: 14px;
+  font-size: 12px;
+  color: rgba(234,242,255,0.55);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 1100px){
+  .span-7, .span-5{ grid-column: span 12; } /* stack charts */
+  .card{ min-height: 360px; }
+}
+
+@media (max-width: 900px){
+  .topbar{ flex-direction: column; }
+  .actions{ justify-content:flex-start; }
+  .kpi{ grid-column: span 6; }
+}
+
+@media (max-width: 520px){
+  .kpi{ grid-column: span 12; }
+  .mini-row{ grid-template-columns: 1fr; }
+}

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NETMON • Home</title>
+
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}?v=2">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=7">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}?v=11">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <!-- Loader -->
+  <div id="pageLoader"><div class="loader-ring"></div></div>
+
+  <!-- Background layers -->
+  <canvas id="tech-canvas"></canvas>
+  <div class="tech-grid"></div>
+  <div class="overlay"></div>
+  <div class="scanlines"></div>
+
+  <!-- HERO -->
+  <header class="hero" id="top">
+    <div class="logo-wrap">
+      <img src="{{ url_for('static', filename='images/only_logo.png') }}" alt="NETMON">
+    </div>
+
+    <div class="project-name">
+      <span class="net">NET</span><span class="mon">MON</span>
+    </div>
+
+    <h1 class="project-title">
+      Intelligent Network Traffic Monitoring &amp; Security System
+    </h1>
+
+    <p class="project-subtitle">
+      Real-time traffic analysis, anomaly detection &amp; network threat protection powered by machine learning
+    </p>
+
+    <button class="scroll-hint" id="scrollToAbout" type="button" aria-label="Scroll to About section">
+      <span>SCROLL TO VIEW ABOUT</span>
+      <span class="arrow">↓</span>
+    </button>
+  </header>
+
+  <!-- ABOUT -->
+  <main class="below" aria-label="About Section">
+    <section class="about-wrap" id="about">
+      <div class="about-shell">
+
+        <div class="about-head">
+          <div class="about-left">
+            <div class="kicker">ABOUT</div>
+            <h2 class="about-title">NetMon Security Operations Overview</h2>
+            <p class="about-sub">
+              SOC-inspired monitoring that turns raw packets into clear signals: visibility, anomalies, and threat context.
+            </p>
+          </div>
+
+          <div class="about-badges" aria-label="Product tags">
+            <span class="badge">SOC-STYLE</span>
+            <span class="badge">REAL-TIME</span>
+            <span class="badge">ML-ASSISTED</span>
+          </div>
+        </div>
+
+        <div class="about-grid">
+          <div class="card narrative">
+            <h3>What NetMon Does</h3>
+            <p>
+              NetMon provides live network visibility by capturing traffic, summarizing protocols &amp; flows, and
+              raising anomaly/threat indicators with explainable reasoning. Built for practical cybersecurity learning
+              and demo-ready analysis.
+            </p>
+
+            <div class="divider"></div>
+
+            <h3>Core Capabilities</h3>
+            <ul class="bullets">
+              <li><b>Live Visibility:</b> protocols, flows, packets/sec in real time</li>
+              <li><b>Anomaly Detection:</b> spikes, abnormal packet behavior, threshold breaches</li>
+              <li><b>Threat Indicators:</b> suspicious patterns summarized with reasons</li>
+              <li><b>Discovery:</b> internal/external devices + traffic relationships</li>
+              <li><b>Actionable Output:</b> clear status, severity, and signals</li>
+            </ul>
+
+            <div class="chips" aria-label="Feature chips">
+              <span class="chip">Protocols &amp; Flows</span>
+              <span class="chip">Anomaly Detection</span>
+              <span class="chip">Threat Indicators</span>
+              <span class="chip">Device Discovery</span>
+              <span class="chip">Security Scans</span>
+            </div>
+          </div>
+
+          <div class="card soc-panel" aria-label="Live SOC Status panel">
+            <div class="soc-top">
+              <div>
+                <div class="soc-title">LIVE SOC STATUS</div>
+                <div class="soc-sub">Signals refresh every 2 seconds</div>
+              </div>
+              <div class="pulse-dot dot-normal" id="pulseDot" title="Live status"></div>
+            </div>
+
+            <div class="stat-grid">
+              <div class="stat">
+                <div class="stat-label">THREAT LEVEL</div>
+                <div class="stat-value lvl-normal" id="hud-threat">NORMAL</div>
+              </div>
+
+              <div class="stat">
+                <div class="stat-label">ANOMALY SCORE</div>
+                <div class="stat-value" id="hud-score">0</div>
+              </div>
+
+              <div class="stat">
+                <div class="stat-label">PACKETS / SEC</div>
+                <div class="stat-value" id="hud-pps">0</div>
+              </div>
+
+              <div class="stat">
+                <div class="stat-label">THREATS / SEC</div>
+                <div class="stat-value" id="hud-tps">0</div>
+              </div>
+
+              <div class="stat">
+                <div class="stat-label">ACTIVE FLOWS</div>
+                <div class="stat-value" id="hud-flows">0</div>
+              </div>
+
+              <div class="stat">
+                <div class="stat-label">NETWORK STATE</div>
+                <div class="stat-value state" id="hud-state">INITIALIZING</div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="reasons">
+              <div class="reasons-title">AI REASONS</div>
+              <ul id="hud-reasons">
+                <li>Waiting for traffic…</li>
+              </ul>
+            </div>
+
+            <div class="soc-footer">
+              <span class="mini">Engine: Rules + ML</span>
+              <span class="mini">Mode: Live Capture</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-foot">NetMon • Security Monitoring Dashboard</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ✅ Next button must be LAST in body -->
+  <a class="next-btn" href="{{ url_for('login_page') }}">Next →</a>
+
+  <script>
+    // Loader fade
+    window.addEventListener("load", () => {
+      const loader = document.getElementById("pageLoader");
+      loader.style.opacity = "0";
+      setTimeout(() => loader.style.display = "none", 500);
+    });
+
+    // Scroll hint click
+    document.getElementById("scrollToAbout")?.addEventListener("click", () => {
+      document.getElementById("about")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    // Reveal animation when About enters viewport
+    const aboutWrap = document.querySelector(".about-wrap");
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if(e.isIntersecting) aboutWrap.classList.add("show");
+      });
+    }, { threshold: 0.18 });
+    obs.observe(aboutWrap);
+
+    function setThreatTheme(level){
+      const t = document.getElementById("hud-threat");
+      const dot = document.getElementById("pulseDot");
+
+      t.classList.remove("lvl-normal","lvl-suspicious","lvl-critical");
+      dot.classList.remove("dot-normal","dot-suspicious","dot-critical");
+
+      if(level === "CRITICAL"){
+        t.classList.add("lvl-critical");
+        dot.classList.add("dot-critical");
+        return;
+      }
+      if(level === "SUSPICIOUS"){
+        t.classList.add("lvl-suspicious");
+        dot.classList.add("dot-suspicious");
+        return;
+      }
+      t.classList.add("lvl-normal");
+      dot.classList.add("dot-normal");
+    }
+
+    async function updateHud(){
+      try{
+        const res = await fetch("/api/live_stats", { cache: "no-store" });
+        const data = await res.json();
+
+        if(!data.ok){
+          document.getElementById("hud-state").textContent = "NO TRAFFIC";
+          document.getElementById("hud-pps").textContent = "0";
+          document.getElementById("hud-tps").textContent = "0";
+          document.getElementById("hud-flows").textContent = "0";
+          document.getElementById("hud-score").textContent = "0";
+          document.getElementById("hud-threat").textContent = "NORMAL";
+          setThreatTheme("NORMAL");
+
+          const ul = document.getElementById("hud-reasons");
+          ul.innerHTML = `<li>${data.error || "Waiting for traffic…"}</li>`;
+          return;
+        }
+
+        document.getElementById("hud-pps").textContent = data.pps ?? 0;
+        document.getElementById("hud-tps").textContent = data.tps ?? 0;
+        document.getElementById("hud-flows").textContent = data.active_flows ?? 0;
+        document.getElementById("hud-score").textContent = data.threat_score ?? 0;
+
+        document.getElementById("hud-state").textContent =
+          data.anom ? "ANOMALY DETECTED" : "STABLE TRAFFIC";
+
+        const level = data.threat_level || "NORMAL";
+        document.getElementById("hud-threat").textContent = level;
+        setThreatTheme(level);
+
+        const reasons = Array.isArray(data.ai_reasons) ? data.ai_reasons : ["No details available."];
+        const ul = document.getElementById("hud-reasons");
+        ul.innerHTML = reasons.slice(0,4).map(r => `<li>${r}</li>`).join("");
+
+      }catch(err){
+        console.log("HUD update error:", err);
+      }
+    }
+    setInterval(updateHud, 2000);
+    updateHud();
+
+    // Canvas mesh animation
+    (() => {
+      const canvas = document.getElementById("tech-canvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+
+      let w, h, pts;
+
+      function resize(){
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+        pts = Array.from({length: 120}, () => ({
+          x: Math.random()*w,
+          y: Math.random()*h,
+          vx: (Math.random()-0.5)*0.35,
+          vy: (Math.random()-0.5)*0.35
+        }));
+      }
+
+      function loop(){
+        ctx.clearRect(0,0,w,h);
+
+        const cx = w/2, cy = h/2;
+        const safeRadius = 420;
+        const MAX_DIST = 260;
+        const BASE_ALPHA = 0.52;
+
+        for (const p of pts){
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < 0) p.x = w; if (p.x > w) p.x = 0;
+          if (p.y < 0) p.y = h; if (p.y > h) p.y = 0;
+        }
+
+        for (let i=0;i<pts.length;i++){
+          for (let j=i+1;j<pts.length;j++){
+            const a=pts[i], b=pts[j];
+            const dx=a.x-b.x, dy=a.y-b.y;
+            const d=Math.sqrt(dx*dx+dy*dy);
+            if (d >= MAX_DIST) continue;
+
+            const da = Math.hypot(a.x-cx, a.y-cy);
+            const db = Math.hypot(b.x-cx, b.y-cy);
+            if (da < safeRadius || db < safeRadius) continue;
+
+            ctx.globalAlpha = ((MAX_DIST - d)/MAX_DIST) * BASE_ALPHA;
+            ctx.beginPath();
+            ctx.moveTo(a.x,a.y);
+            ctx.lineTo(b.x,b.y);
+            ctx.strokeStyle="#17C6C1";
+            ctx.lineWidth=1.6;
+            ctx.stroke();
+          }
+        }
+
+        for (const p of pts){
+          const dp = Math.hypot(p.x - cx, p.y - cy);
+          if (dp < safeRadius) continue;
+
+          ctx.globalAlpha = 0.18;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 1.2, 0, Math.PI * 2);
+          ctx.fillStyle = "#17C6C1";
+          ctx.fill();
+        }
+
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(loop);
+      }
+
+      window.addEventListener("resize", resize);
+      resize();
+      loop();
+    })();
+  </script>
+</body>
+</html>

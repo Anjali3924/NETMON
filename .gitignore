@@ -1,0 +1,15 @@
+# Virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# System files
+.DS_Store
+
+# Optional (keep if you want to ignore DB)
+# *.db
+
+# Logs
+*.log

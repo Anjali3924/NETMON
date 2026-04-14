@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NETMON • AI Quick Analysis</title>
+
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+
+  <!-- ✅ Common + Quick Analysis CSS (cache-bust both) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=7">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/quick_analysis.css') }}?v=7">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+  <div class="sidebar">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NetMon">
+    </div>
+
+    <ul>
+      <li class="{{ 'active' if request.path in ['/', '/home'] else '' }}">
+        <a href="{{ url_for('home') }}">Home</a>
+      </li>
+
+      <li class="{{ 'active' if request.path == '/traffic' else '' }}">
+        <a href="{{ url_for('traffic_page') }}">Traffic</a>
+      </li>
+
+      <li class="{{ 'active' if request.path == '/services' else '' }}">
+        <a href="{{ url_for('services_page') }}">Services</a>
+      </li>
+
+      <li class="{{ 'active' if request.path == '/inventory' else '' }}">
+        <a href="{{ url_for('inventory_page') }}">Inventory</a>
+      </li>
+
+      <li class="{{ 'active' if request.path == '/security' else '' }}">
+        <a href="{{ url_for('security_page') }}">Security</a>
+      </li>
+
+      <li class="{{ 'active' if request.path == '/quick-analysis' else '' }}">
+        <a href="{{ url_for('quick_analysis_page') }}">Quick Analysis</a>
+      </li>
+
+      <li class="logout">
+        <a href="{{ url_for('logout') }}">Logout</a>
+      </li>
+    </ul>
+  </div>
+
+  <main class="main">
+
+    <div class="topbar">
+      <div class="title-wrap">
+        <h1>AI Quick Analysis</h1>
+        <p class="muted">
+          Real-time network intelligence with anomaly detection and AI risk insights.
+        </p>
+
+        <div class="analysis-intro">
+          <strong>About this analysis:</strong>
+          This dashboard analyzes <b>live network traffic</b> from your active interface.
+          It monitors packets/sec, protocols, active flows, and sudden spikes using anomaly detection,
+          then highlights suspicious behavior with AI-based reasoning.
+
+          <br><br>
+
+          <b>Z-Score:</b> Measures how abnormal current packets/sec is compared to the baseline average.
+          Higher values indicate higher deviation (possible anomaly).
+          <br>
+          • 0–1 → Normal <br>
+          • 1–2 → Slight variation <br>
+          • 2–3 → Suspicious spike <br>
+          • &gt;3 → Possible anomaly/attack
+
+          <span class="live-intro" id="liveIntro">Loading live context…</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="btnCapture" class="btn ghost" type="button">Capture</button>
+        <button id="btnInventory" class="btn ghost" type="button">Inventory</button>
+        <button id="btnThreat" class="btn ghost" type="button">Threat Scan</button>
+        <button id="btnStopAll" class="btn danger" type="button">Stop All</button>
+        <button id="btnResumeAll" class="btn primary" type="button">Resume All</button>
+      </div>
+    </div>
+
+    <section class="grid kpi-grid">
+      <div class="kpi">
+        <div class="kpi-label">Packets / sec</div>
+        <div class="kpi-value" id="pps">—</div>
+        <div class="kpi-foot muted" id="ppsHint">rolling baseline…</div>
+      </div>
+
+      <div class="kpi">
+        <div class="kpi-label">Threats / sec</div>
+        <div class="kpi-value" id="tps">—</div>
+        <div class="kpi-foot muted">derived from anomaly spikes</div>
+      </div>
+
+      <div class="kpi">
+        <div class="kpi-label">Active Flows</div>
+        <div class="kpi-value" id="flows">—</div>
+        <div class="kpi-foot muted">src → dst unique pairs</div>
+      </div>
+
+      <div class="kpi threat">
+        <div class="kpi-label">Threat Level</div>
+        <div class="kpi-value" id="threatLevel">—</div>
+        <div class="kpi-foot muted" id="threatScore">Score: —</div>
+      </div>
+    </section>
+
+    <!-- ✅ This section will now align like your screenshot (2x2 grid) -->
+    <section class="grid">
+
+      <div class="card span-7">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Anomaly Detection (Packets/sec)</div>
+            <div class="card-sub muted">Red points indicate anomaly spikes</div>
+          </div>
+          <div class="card-actions">
+            <span class="pill" id="anomPill">Monitoring</span>
+            <button id="stopAnom" class="btn tiny" type="button">Stop</button>
+            <button id="resumeAnom" class="btn tiny primary" type="button">Resume</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart-box">
+            <canvas id="anomChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="card span-5">
+        <div class="card-head">
+          <div>
+            <div class="card-title">AI Risk Insights</div>
+            <div class="card-sub muted">Reasons generated from live traffic context</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="mini-row">
+            <div class="mini">
+              <div class="mini-label muted">Avg Frame Len</div>
+              <div class="mini-value" id="avgLen">0 bytes</div>
+            </div>
+            <div class="mini">
+              <div class="mini-label muted">Baseline PPS</div>
+              <div class="mini-value" id="baselinePps">—</div>
+            </div>
+            <div class="mini">
+              <div class="mini-label muted">Z-Score</div>
+              <div class="mini-value" id="zScore">—</div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <ul class="insights" id="aiInsights">
+            <li class="muted">Loading AI insights…</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card span-7">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Top Protocols</div>
+            <div class="card-sub muted">Most active protocol distribution</div>
+          </div>
+          <div class="card-actions">
+            <button id="stopProto" class="btn tiny" type="button">Stop</button>
+            <button id="resumeProto" class="btn tiny primary" type="button">Resume</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart-box">
+            <canvas id="protoChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="card span-5">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Live Traffic Animation</div>
+            <div class="card-sub muted">Particles represent packet flow (red = anomaly)</div>
+          </div>
+          <div class="card-actions">
+            <button id="stopAnim" class="btn tiny" type="button">Stop</button>
+            <button id="resumeAnim" class="btn tiny primary" type="button">Resume</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="anim-box">
+            <canvas id="trafficCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <div class="footer muted">
+      NETMON • Placement-Level AI Network Dashboard
+    </div>
+
+  </main>
+
+  <script src="{{ url_for('static', filename='js/quick_analysis.js') }}" defer></script>
+</body>
+</html>

@@ -1,0 +1,338 @@
+/* =========================
+   Security Page Styles Only
+   (No sidebar / main layout here)
+========================= */
+
+.threshold{
+  color: var(--cyan, #38bdf8);
+  font-weight: 900;
+  letter-spacing: 0.35px;
+  text-shadow: 0 0 10px rgba(56,189,248,0.18);
+}
+
+/*  Severity range pills under Base Threshold (WORKS ON ALL SCREENS) */
+.threshold-rules{
+  margin-top: 10px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+
+.threshold-rules .rule{
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-weight: 800;
+  letter-spacing: .3px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+}
+
+.threshold-rules .rule.low{
+  background: rgba(34,197,94,0.14);
+  border-color: rgba(34,197,94,0.35);
+  color: #22c55e;
+}
+
+.threshold-rules .rule.medium{
+  background: rgba(250,204,21,0.14);
+  border-color: rgba(250,204,21,0.35);
+  color: #facc15;
+}
+
+.threshold-rules .rule.high{
+  background: rgba(239,68,68,0.14);
+  border-color: rgba(239,68,68,0.35);
+  color: #ef4444;
+}
+
+#secStatus{
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: 0.45px;
+  line-height: 1.1;
+}
+
+#secStatus.SAFE,
+#secStatus.ok{
+  color: var(--success, #22c55e);
+  text-shadow: 0 0 10px rgba(34,197,94,0.18);
+}
+
+#secStatus.SUSPICIOUS,
+#secStatus.danger{
+  color: var(--danger, #ef4444);
+  text-shadow: 0 0 10px rgba(239,68,68,0.18);
+}
+
+#secStatus.warning{
+  color: var(--warning, #facc15);
+  text-shadow: 0 0 10px rgba(250,204,21,0.16);
+}
+
+#secNote{
+  display:block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--muted, #cbd5e1);
+  opacity: 0.9;
+}
+
+.description{
+  margin-top: 10px;
+  line-height: 1.65;
+  font-size: 14px;
+  color: rgba(203,213,225,0.92);
+}
+
+.threshold-text{
+  margin-top: 12px;
+  font-size: 15px;
+  color: rgba(229,231,235,0.95);
+}
+
+#secSeverity{
+  font-weight: 900;
+  font-size: 16px;
+  margin-top: 6px;
+  letter-spacing: 0.25px;
+}
+
+#secSeverity.LOW, #secSeverity.ok{ color: var(--success, #22c55e); }
+#secSeverity.MEDIUM, #secSeverity.warning{ color: var(--warning, #facc15); }
+#secSeverity.HIGH, #secSeverity.danger{ color: var(--danger, #ef4444); }
+
+/* =========================
+   Tables
+========================= */
+
+#secHistoryTable td,
+#secHistoryTable th,
+#secAlertsTable td,
+#secAlertsTable th{
+  font-size: 13px;
+}
+
+#secHistoryTable tr:hover{
+  background: rgba(56,189,248,0.07);
+}
+
+#secAlertsTable tr:hover{
+  background: rgba(239,68,68,0.06);
+}
+
+/* =========================
+   SOC chip style
+========================= */
+.chip{
+  font-weight: 900;
+  padding: 6px 10px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.2px;
+  border: 1px solid rgba(255,255,255,0.10);
+  white-space: nowrap;
+}
+
+.chip.ok{
+  color: var(--success, #22c55e);
+  background: rgba(34,197,94,0.12);
+  border-color: rgba(34,197,94,0.22);
+}
+
+.chip.warning{
+  color: var(--warning, #facc15);
+  background: rgba(250,204,21,0.12);
+  border-color: rgba(250,204,21,0.22);
+}
+
+.chip.danger{
+  color: var(--danger, #ef4444);
+  background: rgba(239,68,68,0.12);
+  border-color: rgba(239,68,68,0.22);
+}
+
+/* =========================
+   Clickable IP
+========================= */
+.ip-link{
+  color: var(--cyan, #5BE7FF);
+  text-decoration: none;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  padding: 4px 8px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(91,231,255,0.14);
+  background: rgba(91,231,255,0.05);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+}
+
+.ip-link:hover{
+  transform: translateY(-1px);
+  border-color: rgba(91,231,255,0.32);
+  box-shadow:
+    0 0 10px rgba(91,231,255,0.18),
+    0 0 22px rgba(91,231,255,0.12);
+}
+
+/* =========================
+   IP Details Modal
+========================= */
+.ip-modal.hidden { display:none; }
+
+.ip-modal{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  padding: 18px;
+}
+
+.ip-modal-card{
+  width: 560px;
+  max-width: 94vw;
+  border-radius: 18px;
+  padding: 14px 14px 16px;
+  background: rgba(2,6,23,0.92);
+  border: 1px solid rgba(91,231,255,0.18);
+  box-shadow: 0 18px 60px rgba(0,0,0,0.55);
+  backdrop-filter: blur(12px);
+  max-height: 78vh;
+  overflow: auto;
+}
+
+.ip-modal-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding-bottom:10px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  position: sticky;
+  top: 0;
+  background: rgba(2,6,23,0.96);
+  backdrop-filter: blur(10px);
+  z-index: 2;
+}
+
+.ip-modal-head h3{
+  margin:0;
+  font-size:16px;
+  letter-spacing:0.35px;
+}
+
+.ip-close{
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.16);
+  color:rgba(234,242,255,0.85);
+  border-radius:10px;
+  padding:6px 10px;
+  cursor:pointer;
+  transition: border-color .12s ease, transform .12s ease, box-shadow .12s ease;
+}
+
+.ip-close:hover{
+  transform:translateY(-1px);
+  border-color: rgba(91,231,255,0.22);
+  box-shadow: 0 0 12px rgba(91,231,255,0.12);
+}
+
+.ip-body{ padding-top:12px; }
+
+.kv{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  color:rgba(234,242,255,0.85);
+  font-size:13px;
+}
+
+.kv span:first-child{
+  color:rgba(234,242,255,0.60);
+}
+
+.maps{
+  display:inline-block;
+  margin-top:12px;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid rgba(91,231,255,0.22);
+  color:var(--cyan, #5BE7FF);
+  text-decoration:none;
+  font-weight:800;
+  letter-spacing:0.2px;
+}
+
+.maps:hover{
+  box-shadow:
+    0 0 10px rgba(91,231,255,0.18),
+    0 0 22px rgba(91,231,255,0.12);
+}
+
+.err{ color:#ff6b6b; font-size:13px; }
+.note{ color:rgba(234,242,255,0.70); font-size:13px; padding:10px 0; }
+
+.modal-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin: 4px 0 10px;
+}
+
+.mini-btn{
+  background: rgba(91,231,255,0.06);
+  border: 1px solid rgba(91,231,255,0.18);
+  color: rgba(234,242,255,0.92);
+  border-radius: 12px;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+}
+
+.mini-btn:hover{
+  transform: translateY(-1px);
+  border-color: rgba(91,231,255,0.32);
+  background: rgba(91,231,255,0.08);
+  box-shadow:
+    0 0 10px rgba(91,231,255,0.14),
+    0 0 22px rgba(91,231,255,0.10);
+}
+
+.sec-line{
+  margin-top: 12px;
+  padding-top: 10px;
+  font-size: 12px;
+  letter-spacing: 0.22px;
+  color: rgba(234,242,255,0.65);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  text-transform: uppercase;
+}
+
+/* =========================
+   Responsive
+========================= */
+@media (max-width:768px){
+  #secStatus{ font-size:16px; }
+  #secSeverity{ font-size:15px; }
+
+  #secHistoryTable td, #secHistoryTable th,
+  #secAlertsTable td, #secAlertsTable th{
+    font-size:12px;
+    padding:10px;
+  }
+
+  .ip-modal-card{ width: 94vw; max-height: 80vh; }
+  .mini-btn{ width: 100%; justify-content: center; text-align: center; }
+}
+zz

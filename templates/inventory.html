@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NETMON • Inventory Dashboard</title>
+
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+
+  <!-- ✅ Common CSS (cache bust) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=7">
+
+  <!-- Inventory CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/inventory.css') }}">
+</head>
+
+<body>
+
+  <div class="sidebar">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NetMon">
+    </div>
+
+    <ul>
+      <li class="{{ 'active' if request.path in ['/', '/home'] else '' }}">
+        <a href="{{ url_for('home') }}">Home</a>
+      </li>
+      <li class="{{ 'active' if request.path == '/login' else '' }}">
+        <a href="{{ url_for('login_page') }}">Login</a>
+      </li>
+      <li class="{{ 'active' if request.path == '/traffic' else '' }}">
+        <a href="{{ url_for('traffic_page') }}">Traffic</a>
+      </li>
+      <li class="{{ 'active' if request.path == '/services' else '' }}">
+        <a href="{{ url_for('services_page') }}">Services</a>
+      </li>
+      <li class="{{ 'active' if request.path == '/inventory' else '' }}">
+        <a href="{{ url_for('inventory_page') }}">Inventory</a>
+      </li>
+      <li class="{{ 'active' if request.path == '/security' else '' }}">
+        <a href="{{ url_for('security_page') }}">Security</a>
+      </li>
+      <li class="{{ 'active' if request.path == '/quick-analysis' else '' }}">
+        <a href="{{ url_for('quick_analysis_page') }}">Quick Analysis</a>
+      </li>
+      <li class="logout">
+        <a href="{{ url_for('logout') }}">Logout</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="main">
+
+    <div class="topbar">
+      <div>
+        <h1>Network Inventory</h1>
+        <p class="subtitle">Scan and monitor internal vs external devices seen in live traffic.</p>
+      </div>
+
+      <div class="top-actions">
+        <div class="pill" title="Inventory monitoring status">
+          <span class="dot"></span>
+          <span>Active</span>
+        </div>
+
+        <button class="btn btn-primary" type="button" onclick="safeLoadInventory()">
+          Scan Devices
+        </button>
+      </div>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <h3>Total Devices</h3>
+        <p id="invTotal">0</p>
+      </div>
+
+      <div class="card">
+        <h3>Internal Devices</h3>
+        <p id="invInternal">0</p>
+      </div>
+
+      <div class="card">
+        <h3>External Devices</h3>
+        <p id="invExternal">0</p>
+      </div>
+
+      <div class="card">
+        <h3>Status</h3>
+        <p id="invStatus">ACTIVE</p>
+        <small id="invNote">Monitoring live network</small>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <h3>Detected Devices</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>IP Address</th>
+            <th>Type</th>
+            <th>Packets</th>
+            <th>First Seen</th>
+            <th>Last Seen</th>
+          </tr>
+        </thead>
+
+        <tbody id="inventoryTable">
+          <tr><td colspan="6">No data</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-container history-section">
+      <div class="history-header">
+        <h3 class="history-title">History</h3>
+
+        <div class="history-controls">
+          <label for="historyDays">Show:</label>
+
+          <select id="historyDays" aria-label="Select number of days">
+            <option value="1">1 day</option>
+            <option value="2" selected>2 days</option>
+            <option value="3">3 days</option>
+            <option value="7">7 days</option>
+          </select>
+
+          <button class="btn" type="button" onclick="loadInventoryHistory()">
+            Load History
+          </button>
+        </div>
+      </div>
+
+      <p id="historyMeta" class="history-meta"></p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>IP Address</th>
+            <th>Type</th>
+            <th>Total Packets</th>
+            <th>First Seen</th>
+            <th>Last Seen</th>
+          </tr>
+        </thead>
+
+        <tbody id="historyTable">
+          <tr><td colspan="6">Loading history...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <script src="{{ url_for('static', filename='js/inventory.js') }}" defer></script>
+</body>
+</html>

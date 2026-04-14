@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NETMON • Network Traffic Dashboard</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+
+  <!-- ✅ Global CSS (cache bust) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=7">
+</head>
+
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NetMon">
+    </div>
+
+    <ul>
+      <li class="{{ 'active' if request.path in ['/', '/home'] else '' }}">
+        <a href="{{ url_for('home') }}">Home</a>
+      </li>
+
+      <li class="{{ 'active' if request.path == '/login' else '' }}">
+        <a href="{{ url_for('login_page') }}">Login</a>
+      </li>
+
+      <li class="{{ 'active' if request.path == '/traffic' else '' }}">
+        <a href="{{ url_for('traffic_page') }}">Traffic</a>
+      </li>
+
+      <li class="{{ 'active' if request.path == '/services' else '' }}">
+        <a href="{{ url_for('services_page') }}">Services</a>
+      </li>
+
+      <li class="{{ 'active' if request.path == '/inventory' else '' }}">
+        <a href="{{ url_for('inventory_page') }}">Inventory</a>
+      </li>
+
+      <li class="{{ 'active' if request.path == '/security' else '' }}">
+        <a href="{{ url_for('security_page') }}">Security</a>
+      </li>
+
+      <li class="{{ 'active' if request.path == '/quick-analysis' else '' }}">
+        <a href="{{ url_for('quick_analysis_page') }}">Quick Analysis</a>
+      </li>
+
+      <li class="logout">
+        <a href="{{ url_for('logout') }}">Logout</a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- Header -->
+    <div class="topbar">
+      <div>
+        <h1>Network Traffic</h1>
+        <p class="subtitle">Live packet capture and traffic overview.</p>
+      </div>
+
+      <div class="top-actions">
+        <div class="pill" title="Capture status">
+          <span class="dot"></span>
+          <span>Live Capture</span>
+        </div>
+
+        <button class="btn btn-primary" type="button" onclick="startCapture()">
+          Capture Packets
+        </button>
+      </div>
+    </div>
+
+    <!-- ✅ Stats (2 wide blocks like screenshot) -->
+    <div class="cards cards-traffic">
+      <div class="card">
+        <h3>Total Packets</h3>
+        <p id="totalPackets">0</p>
+      </div>
+
+      <div class="card">
+        <h3>Status</h3>
+        <p class="ok">Live</p>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+      <h3>Captured Packets</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Source IP</th>
+            <th>Destination IP</th>
+            <th>Length(Bytes)</th>
+          </tr>
+        </thead>
+
+        <tbody id="packetTable">
+          <tr>
+            <td colspan="4">No packets captured yet</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- ✅ Correct JS file for traffic -->
+  <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+
+</body>
+</html>
