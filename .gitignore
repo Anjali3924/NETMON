@@ -8,8 +8,8 @@ __pycache__/
 # System files
 .DS_Store
 
-# Optional (keep if you want to ignore DB)
-# *.db
+# Databases
+*.db
 
 # Logs
 *.log
