@@ -277,6 +277,5 @@ It integrates monitoring, prediction, and visualization into a single intelligen
 
 Author
 ======
-
-Sarthak Mohite
-Anjali kumawat
+- Anjali Kumawat
+- Sarthak Mohite
