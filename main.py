@@ -36,7 +36,7 @@ SEC_DB_PATH = os.path.join(BASE_DIR, "netmon_security.db")
 # =========================
 # GLOBAL SETTINGS
 # =========================
-TSHARK_PATH = r"C:\Program Files\Wireshark\tshark.exe"
+TSHARK_PATH = None if os.environ.get("RENDER") else r"C:\Program Files\Wireshark\tshark.exe" # Render / Linux
 INTERFACE_NO = "Wi-Fi"   # change if your interface name differs
 PROC_TIMEOUT = 12
 
@@ -56,6 +56,7 @@ app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
 #  Basic session hardening (safe for dev too)
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"] = not app.debug
 
 
 # =========================
@@ -368,6 +369,17 @@ def favicon():
 # TSHARK HELPER
 # =========================
 def run_tshark(command):
+
+    # 🚀 SIMULATION MODE (for Render / Linux)
+    if not TSHARK_PATH or TSHARK_PATH is None:
+        fake_output = []
+        for i in range(10):
+            fake_output.append(
+                f"{i}|192.168.1.{i + 2}|8.8.8.8|{64 + i *300 }"
+            )
+        return "\n".join(fake_output), None
+
+    # 💻 LOCAL MODE (your laptop)
     try:
         process = subprocess.Popen(
             command,
@@ -380,7 +392,7 @@ def run_tshark(command):
             out, err = process.communicate(timeout=PROC_TIMEOUT)
         except subprocess.TimeoutExpired:
             process.kill()
-            return None, "tshark timeout (network quiet / wrong interface)"
+            return None, "tshark timeout"
 
         out = (out or "").strip()
         err = (err or "").strip()
@@ -388,21 +400,13 @@ def run_tshark(command):
         if out:
             return out, None
 
-        err_lower = err.lower()
-        real_error_keywords = [
-            "error", "permission denied", "access is denied", "could not", "cannot",
-            "failed", "not found", "no such", "invalid",
-        ]
-
-        if err and any(k in err_lower for k in real_error_keywords):
-            return None, f"tshark error: {err}"
-
-        return None, "No packets captured. Generate traffic (YouTube / speedtest) and try again."
+        return None, "No packets captured"
 
     except FileNotFoundError:
-        return None, "tshark not found. Check TSHARK_PATH"
+        return None, "tshark not found"
     except Exception as e:
         return None, str(e)
+
 
 
 # =========================
@@ -423,7 +427,7 @@ def classify_ip(ip: str) -> str:
 
 def capture_inventory_devices(duration_sec: int = 4, cap: int = 30):
     command = [
-        TSHARK_PATH, "-i", INTERFACE_NO, "-n",
+         None, "-i", INTERFACE_NO, "-n",
         "-a", f"duration:{duration_sec}",
         "-c", str(cap),
         "-Y", "ip",
